@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin", "MobeAdmin\MobeAdmin.csproj", "{4062F68A-8A6A-4F39-8A8B-11BD91CE2A46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{9A77E51B-509A-4AD9-BA5C-4917622A25BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.Utility", "MobeAdmin.Utility\MobeAdmin.Utility.csproj", "{7873646C-3A9F-466C-B25D-5721AB200EC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Domain", "MobeAdmin.Domain\MobeAdmin.Domain.csproj", "{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Helper", "MobeAdmin.Helper\MobeAdmin.Helper.csproj", "{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Service", "MobeAdmin.Service\MobeAdmin.Service.csproj", "{1B7148ED-F25C-4920-8EC8-627F7C06E728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.DataAccess", "MobeAdmin.DataAccess\MobeAdmin.DataAccess.csproj", "{516B4EB9-6084-4642-B61F-87728BDE4C7A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4062F68A-8A6A-4F39-8A8B-11BD91CE2A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4062F68A-8A6A-4F39-8A8B-11BD91CE2A46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4062F68A-8A6A-4F39-8A8B-11BD91CE2A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4062F68A-8A6A-4F39-8A8B-11BD91CE2A46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7873646C-3A9F-466C-B25D-5721AB200EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7873646C-3A9F-466C-B25D-5721AB200EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7873646C-3A9F-466C-B25D-5721AB200EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7873646C-3A9F-466C-B25D-5721AB200EC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B7148ED-F25C-4920-8EC8-627F7C06E728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B7148ED-F25C-4920-8EC8-627F7C06E728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B7148ED-F25C-4920-8EC8-627F7C06E728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B7148ED-F25C-4920-8EC8-627F7C06E728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7873646C-3A9F-466C-B25D-5721AB200EC5} = {9A77E51B-509A-4AD9-BA5C-4917622A25BF}
+		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5} = {9A77E51B-509A-4AD9-BA5C-4917622A25BF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7649BAA4-3710-4A59-B973-7ED658217264}
+	EndGlobalSection
+EndGlobal
