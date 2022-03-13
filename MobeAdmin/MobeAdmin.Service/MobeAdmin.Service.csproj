@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MobeAdmin.DataAccess\MobeAdmin.DataAccess.csproj" />
     <ProjectReference Include="..\MobeAdmin.Domain\MobeAdmin.Domain.csproj" />
   </ItemGroup>
 

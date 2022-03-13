@@ -1,4 +1,5 @@
-﻿using MobeAdmin.Domain.Model;
+﻿using MobeAdmin.DataAccess.Interface;
+using MobeAdmin.Domain.Model;
 using MobeAdmin.Service.Interface;
 using MobeAdmin.Service.ViewModel.ProductManage;
 using System;
@@ -11,6 +12,11 @@ namespace MobeAdmin.Service.Service
 {
     public class ProductService : IProductService
     {
+        public ProductService(IProductRepostory ProductRepostory)
+        {
+
+        }
+
         public async Task<List<ProductViewModel>> ListedProductAsync()
         {
             return null;
