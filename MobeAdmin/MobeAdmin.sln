@@ -9,13 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.Utility", "MobeAdmin.Utility\MobeAdmin.Utility.csproj", "{7873646C-3A9F-466C-B25D-5721AB200EC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Domain", "MobeAdmin.Domain\MobeAdmin.Domain.csproj", "{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.Domain", "MobeAdmin.Domain\MobeAdmin.Domain.csproj", "{B1EACCC0-D6E3-44B4-B8AE-003687A4885D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Helper", "MobeAdmin.Helper\MobeAdmin.Helper.csproj", "{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.Helper", "MobeAdmin.Helper\MobeAdmin.Helper.csproj", "{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Service", "MobeAdmin.Service\MobeAdmin.Service.csproj", "{1B7148ED-F25C-4920-8EC8-627F7C06E728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.Service", "MobeAdmin.Service\MobeAdmin.Service.csproj", "{1B7148ED-F25C-4920-8EC8-627F7C06E728}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.DataAccess", "MobeAdmin.DataAccess\MobeAdmin.DataAccess.csproj", "{516B4EB9-6084-4642-B61F-87728BDE4C7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobeAdmin.DataAccess", "MobeAdmin.DataAccess\MobeAdmin.DataAccess.csproj", "{516B4EB9-6084-4642-B61F-87728BDE4C7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobeAdmin.Core", "MobeAdmin.Core\MobeAdmin.Core.csproj", "{84D237AF-2DA5-4D3E-88E1-9F5762217A08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{516B4EB9-6084-4642-B61F-87728BDE4C7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84D237AF-2DA5-4D3E-88E1-9F5762217A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84D237AF-2DA5-4D3E-88E1-9F5762217A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84D237AF-2DA5-4D3E-88E1-9F5762217A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84D237AF-2DA5-4D3E-88E1-9F5762217A08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7873646C-3A9F-466C-B25D-5721AB200EC5} = {9A77E51B-509A-4AD9-BA5C-4917622A25BF}
 		{9AE10EFC-08C2-4AD0-A3B5-274A2C8A2CA5} = {9A77E51B-509A-4AD9-BA5C-4917622A25BF}
+		{84D237AF-2DA5-4D3E-88E1-9F5762217A08} = {9A77E51B-509A-4AD9-BA5C-4917622A25BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7649BAA4-3710-4A59-B973-7ED658217264}

@@ -12,8 +12,8 @@ namespace MobeAdmin.Service.Interface
     {
         Task<List<ProductViewModel>> ListedProductAsync();
         Task<bool> CreateProductAsync(CreateProductViewModel model);
-        Task<bool> UpdateProductAsync(CreateProductViewModel model);
-        Task<bool> DeleteProductAsync(CreateProductViewModel model);
+        Task<bool> UpdateProductAsync(UpdateProductViewModel model);
+        Task<bool> DeleteProductAsync(DeleteProductViewMode model);
         Task<Product> GetProductByIdAsync(int id);
     }
 }

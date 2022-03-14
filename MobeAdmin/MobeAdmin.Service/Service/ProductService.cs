@@ -12,32 +12,35 @@ namespace MobeAdmin.Service.Service
 {
     public class ProductService : IProductService
     {
+        private readonly IProductRepostory _ProductRepostory;
         public ProductService(IProductRepostory ProductRepostory)
         {
-
+            _ProductRepostory = ProductRepostory;
         }
 
         public async Task<List<ProductViewModel>> ListedProductAsync()
         {
-            return null;
+            var result = await _ProductRepostory.ListedAllAsync();
+            result.ToList();
+            return new List<ProductViewModel>();
         }
 
-        public Task<bool> CreateProductAsync(CreateProductViewModel model)
+        public async Task<bool> CreateProductAsync(CreateProductViewModel model)
+        {
+            return await _ProductRepostory.CreateAsync(model);
+        }
+
+        public async Task<bool> DeleteProductAsync(DeleteProductViewMode model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteProductAsync(CreateProductViewModel model)
+        public async Task<Product> GetProductByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Product> GetProductByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> UpdateProductAsync(CreateProductViewModel model)
+        public async Task<bool> UpdateProductAsync(UpdateProductViewModel model)
         {
             throw new NotImplementedException();
         }

@@ -12,7 +12,6 @@ namespace MobeAdmin.Service
     {
         public static void AddServiceLayer(this IServiceCollection services)
         {
-
             foreach (var Type in Assembly.Load("MobeAdmin.Service").GetTypes().Where(c => !c.IsInterface && !c.IsAbstract && c.GetInterfaces().Count() > 0))
             {
                 foreach (var ImplementedInterface in Type.GetInterfaces())

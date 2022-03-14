@@ -10,17 +10,32 @@ namespace MobeAdmin.Service.ViewModel.ProductManage
     {
     }
 
+    public class ListedViewModel
+    {
+        public string ProductName { get; set; }
+        public DateTime CreateTime { get; set; }
+        public int ProductCount { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
     public class CreateProductViewModel
-    { 
-    
+    {
+        public string ProductName { get; set; }
+        public DateTime CreateTime { get; set; }
+        public int ProductCount { get; set; }
+        public decimal UnitPrice { get; set; }
     }
 
     public class UpdateProductViewModel
     {
-
+        public int Id { get; set; }
+        public string ProductName { get; set; }
+        public DateTime CreateTime { get; set; }
+        public int ProductCount { get; set; }
+        public decimal UnitPrice { get; set; }
     }
 
     public class DeleteProductViewMode
-    { 
+    {
+        public int Id { get; set; }
     }
 }

@@ -11,6 +11,12 @@ namespace MobeAdmin.DataAccess.DbCore.Base
     public class DbConnectionFactory : IDbConnectionFactory
     {
         private readonly IDictionary<EnumConnectionName, string> _ConnectStringDic;
+
+        public DbConnectionFactory(IDictionary<EnumConnectionName, string> ConnectStringDic)
+        {
+            _ConnectStringDic = ConnectStringDic;
+        }
+
         public IDbConnection CreateDbConnection(EnumConnectionName ConnectionName)
         {
             if (_ConnectStringDic.TryGetValue(ConnectionName, out string ConnectionString))
