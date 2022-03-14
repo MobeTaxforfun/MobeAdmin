@@ -1,4 +1,5 @@
-﻿using MobeAdmin.DataAccess.Interface;
+﻿using AutoMapper;
+using MobeAdmin.DataAccess.Interface;
 using MobeAdmin.Domain.Model;
 using MobeAdmin.Service.Interface;
 using MobeAdmin.Service.ViewModel.ProductManage;
@@ -13,7 +14,8 @@ namespace MobeAdmin.Service.Service
     public class ProductService : IProductService
     {
         private readonly IProductRepostory _ProductRepostory;
-        public ProductService(IProductRepostory ProductRepostory)
+        private readonly IMapper _Mapper;
+        public ProductService(IMapper mapper,IProductRepostory ProductRepostory)
         {
             _ProductRepostory = ProductRepostory;
         }
@@ -25,14 +27,14 @@ namespace MobeAdmin.Service.Service
             return new List<ProductViewModel>();
         }
 
-        public async Task<bool> CreateProductAsync(CreateProductViewModel model)
+        public async Task<int> CreateProductAsync(CreateProductViewModel model)
         {
-            return await _ProductRepostory.CreateAsync(model);
+            return await _ProductRepostory.CreateAsync(_Mapper.Map<Product>(model));
         }
 
-        public async Task<bool> DeleteProductAsync(DeleteProductViewMode model)
+        public async Task<int> DeleteProductAsync(DeleteProductViewMode model)
         {
-            throw new NotImplementedException();
+            return await _ProductRepostory.DeleteAsync(model.Id);
         }
 
         public async Task<Product> GetProductByIdAsync(int id)
@@ -40,7 +42,7 @@ namespace MobeAdmin.Service.Service
             throw new NotImplementedException();
         }
 
-        public async Task<bool> UpdateProductAsync(UpdateProductViewModel model)
+        public async Task<int> UpdateProductAsync(UpdateProductViewModel model)
         {
             throw new NotImplementedException();
         }
