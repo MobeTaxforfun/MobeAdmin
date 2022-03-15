@@ -12,7 +12,7 @@ namespace MobeAdmin.Core.Setup
         public static void AddAutoMapperInit(this IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
-            services.AddAutoMapper(AppDomain.CurrentDomain.Load("MobeAdmin.Domain.Mappings"));
+            services.AddAutoMapper(AppDomain.CurrentDomain.Load("MobeAdmin.Domain"));
         }
     }
 }
