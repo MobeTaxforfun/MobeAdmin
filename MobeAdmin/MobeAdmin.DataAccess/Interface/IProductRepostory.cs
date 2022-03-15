@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MobeAdmin.DataAccess.Interface
 {
-    public interface IProductRepostory
+    public interface IProductRepostory : IGenericRepository<Product>
     {
         Task<IEnumerable<Product>> ListedProduct();
     }

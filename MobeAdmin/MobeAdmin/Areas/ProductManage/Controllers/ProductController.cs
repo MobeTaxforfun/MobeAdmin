@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MobeAdmin.Service.Interface;
+using MobeAdmin.Service.ViewModel.ProductManage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,25 @@ namespace MobeAdmin.Areas.ProductManage.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var result = await _ProductService.ListedProductAsync();
+            var ListedProducts = await _ProductService.ListedProductAsync();
+            return View();
+        }
+
+        public async Task<IActionResult> Create(CreateProductViewModel Model)
+        {
+            await _ProductService.CreateProductAsync(Model);
+            return View();
+        }
+
+        public async Task<IActionResult> Update(UpdateProductViewModel Model)
+        {
+            await _ProductService.UpdateProductAsync(Model);
+            return View();
+        }
+
+        public async Task<IActionResult> Delete(DeleteProductViewMode Model)
+        {
+            await _ProductService.DeleteProductAsync(Model);
             return View();
         }
     }

@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MobeAdmin.Core.Setup;
+using MobeAdmin.DataAccess;
+using MobeAdmin.DataAccess.DbCore.Base;
 using MobeAdmin.Service;
 using System;
 using System.Collections.Generic;
@@ -25,6 +28,21 @@ namespace MobeAdmin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var ConnectionDict = new Dictionary<EnumConnectionName, string>
+            {
+                { EnumConnectionName.Master, this.Configuration.GetConnectionString("Master") },
+                { EnumConnectionName.Slave, this.Configuration.GetConnectionString("Slave") }
+            };
+
+            //Init SQL 主從連線 [follow up] 可能可以順便帶入 Db 總類 Ex
+            services.AddSingleton<IDictionary<EnumConnectionName, string>>(ConnectionDict);
+            services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
+
+            //Init AutoMappper 
+            services.AddAutoMapperInit();
+            //Init DataAccessLayer 中需要的的 Interface
+            services.AddDataAccessLayer();
+            //Init ServiceLayer 中所有的 Interface
             services.AddServiceLayer();
 
             services.AddControllersWithViews();

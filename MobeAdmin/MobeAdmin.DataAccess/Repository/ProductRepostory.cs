@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MobeAdmin.DataAccess.Repository
 {
-    public class ProductRepostory : BaseRepository<Product>, IProductRepostory
+    public class ProductRepostory : BaseRepository<Product> , IProductRepostory
     {
         public ProductRepostory(IDbConnectionFactory dbConnectionFactory) : base(dbConnectionFactory)
         {
