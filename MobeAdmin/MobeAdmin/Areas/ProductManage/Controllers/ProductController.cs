@@ -24,7 +24,14 @@ namespace MobeAdmin.Areas.ProductManage.Controllers
 
         public async Task<IActionResult> Create(CreateProductViewModel Model)
         {
-            await _ProductService.CreateProductAsync(Model);
+            CreateProductViewModel TestMode = new CreateProductViewModel
+            {
+                ProductCount = 10,
+                ProductName = "TEST",
+                CreateTime = DateTime.Now,
+                UnitPrice = 1
+            };
+            await _ProductService.CreateProductAsync(TestMode);
             return View();
         }
 

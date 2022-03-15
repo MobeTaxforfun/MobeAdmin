@@ -9,6 +9,7 @@ using Dapper;
 using System.Reflection;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MobeAdmin.DataAccess
 {
@@ -29,14 +30,15 @@ namespace MobeAdmin.DataAccess
 
         public virtual async Task<int> DeleteAsync(object Id)
         {
-            var key = typeof(T).GetType().GetProperties().FirstOrDefault(gt => gt.GetCustomAttributes().Any(a => ((KeyAttribute)a) != null));
-            string mainsql = @$"Delete From {TableName} Where Id = @Id";
+            string Condition = GenerateListOfPropertiesGetCondition(GetProperties);
+            string mainsql = @$"Delete From {TableName} Where {Condition} = @Id";
             return await ExecuteAsync(mainsql, Id);
         }
 
         public virtual async Task<T> GetOne(object Id)
         {
-            string mainsql = @$"Select Top(1) * From {TableName} Where Id = @Id";
+            string Condition = GenerateListOfPropertiesGetCondition(GetProperties);
+            string mainsql = @$"Select Top(1) * From {TableName} Where {Condition} = @Id";
             return await QuerySingleOrDefaultAsync<T>(mainsql, Id);
         }
 
@@ -48,14 +50,14 @@ namespace MobeAdmin.DataAccess
 
         public virtual async Task<int> CreateAsync(T model)
         {
-            string mainsql = @$"Select * From {TableName}";
-            return await ExecuteAsync(mainsql);
+            string mainsql = GenerateInsertSql();
+            return await ExecuteAsync(mainsql, model);
         }
 
-
-        public Task<int> UpdateAsync(T model)
+        public virtual async Task<int> UpdateAsync(T model)
         {
-            throw new NotImplementedException();
+            string mainsql = GenerateUpdateSql();
+            return await ExecuteAsync(mainsql, model);
         }
 
         /// <summary>
@@ -64,47 +66,99 @@ namespace MobeAdmin.DataAccess
         /// <returns>SQL string</returns>
         private string GenerateInsertSql()
         {
-            StringBuilder mainsql = new StringBuilder($"Insert Into {TableName}");
-            mainsql.Append("(");
-            var Properties = GenerateListOfProperties(GetProperties);
-            Properties.ForEach(p => mainsql.Append($"[{p}],"));
+            var Properties = GenerateListOfPropertiesUseToInsert(GetProperties);
 
-            mainsql
-            .Remove(mainsql.Length - 1, 1)
-            .Append(") VALUES (");
-
-            Properties.ForEach(prop => { mainsql.Append($"@{prop},"); });
-
-            mainsql.Remove(mainsql.Length - 1, 1).Append(")");
-
+            string TableField = string.Concat(Properties.Select(i => string.Format("[{0}],", i)));
+            TableField = TableField.Remove(TableField.Length - 1);
+            string TableValues = string.Concat(Properties.Select(i => string.Format("@{0},", i)));
+            TableValues = TableValues.Remove(TableValues.Length - 1);
+            StringBuilder mainsql = new StringBuilder($"Insert Into {TableName} ({TableField}) Values ({ TableValues} ) ");
             return mainsql.ToString();
         }
 
         private string GenerateUpdateSql()
         {
-            var updateQuery = new StringBuilder($"UPDATE {TableName} SET ");
-            var properties = GenerateListOfProperties(GetProperties);
-
-            properties.ForEach(property =>
-            {
-                if (!property.Equals("Id"))
-                {
-                    updateQuery.Append($"{property}=@{property},");
-                }
-            });
-
-            updateQuery.Remove(updateQuery.Length - 1, 1); //remove last comma
-            updateQuery.Append(" WHERE Id=@Id");
-
-            return updateQuery.ToString();
+            var Properties = GenerateListOfPropertiesUseToUpdate(GetProperties);
+            string TableValues = string.Concat(Properties.Select(i => string.Format($"{i}=@{i},", i)));
+            TableValues = TableValues.Remove(TableValues.Length - 1);
+            string Condition = GenerateListOfPropertiesGetCondition(GetProperties);
+            var mainsql = new StringBuilder($"UPDATE {TableName} SET {TableValues} Where {Condition} = @{Condition} ");
+            return mainsql.ToString();
         }
 
-        private static List<string> GenerateListOfProperties(IEnumerable<PropertyInfo> listOfProperties)
+        /// <summary>
+        /// 擷取 TModel 產生 Insert 語法 
+        /// </summary>
+        /// <param name="ListOfProperties"></param>
+        /// <returns></returns>
+        private List<string> GenerateListOfPropertiesUseToInsert(IEnumerable<PropertyInfo> ListOfProperties)
         {
-            return (from prop in listOfProperties
-                    let attributes = prop.GetCustomAttributes(typeof(DescriptionAttribute), false)
-                    where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "ignore"
-                    select prop.Name).ToList();
+            List<string> Result = new List<string>();
+            foreach (var propertyInfo in ListOfProperties)
+            {
+                object[] Attrs = propertyInfo.GetCustomAttributes(true);
+                //如果是 Identity 不加入,如果是 Key 會加入
+                if (Attrs.Length <= 0)
+                {
+                    Result.Add(propertyInfo.Name);
+                }
+                else
+                {
+                    if (propertyInfo.GetCustomAttributes(typeof(DatabaseGeneratedAttribute), false) != null)
+                        continue; //DatabaseGeneratedOption 還沒判斷
+                    if (propertyInfo.GetCustomAttributes(typeof(KeyAttribute), false) != null)
+                        Result.Add(propertyInfo.Name);
+                }
+
+            }
+            return Result; //看看之後要不要改成 Linq
+            //return (from prop in ListOfProperties
+            //        let attributes = prop.GetCustomAttributes(typeof(DescriptionAttribute), false)
+            //        where attributes.Length <= 0 || (attributes[0] as DescriptionAttribute)?.Description != "ignore"
+            //        select prop.Name).ToList();
+        }
+
+        /// <summary>
+        /// 擷取 TModel 產生 Update 語法 
+        /// </summary>
+        /// <param name="ListOfProperties"></param>
+        /// <returns></returns>
+        private List<string> GenerateListOfPropertiesUseToUpdate(IEnumerable<PropertyInfo> ListOfProperties)
+        {
+            List<string> Result = new List<string>();
+            foreach (var propertyInfo in ListOfProperties)
+            {
+                object[] Attrs = propertyInfo.GetCustomAttributes(true);
+                //如果是 Identity 不加入,如果是 Key 會加入
+                if (Attrs.Length <= 0)
+                {
+                    Result.Add(propertyInfo.Name);
+                }
+            }
+            return Result; //看看之後要不要改成 Linq
+        }
+
+        /// <summary>
+        /// 回傳被標記為 Key 的 Field
+        /// </summary>
+        /// <param name="ListOfProperties"></param>
+        /// <returns></returns>
+        private string GenerateListOfPropertiesGetCondition(IEnumerable<PropertyInfo> ListOfProperties)
+        {
+            var result = (from propertyInfo in ListOfProperties
+                          let attributes = propertyInfo.GetCustomAttributes(typeof(KeyAttribute), false)
+                          select propertyInfo.Name);
+            if(result == null)
+            {
+                throw new Exception("快速方法需要一個 Key 值");
+            }
+
+            if (result.Count() > 1)
+            {
+                throw new Exception("快速方法不支援多組 Key");
+            }
+
+            return result.FirstOrDefault();
         }
     }
 }

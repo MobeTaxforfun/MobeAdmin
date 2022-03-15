@@ -15,9 +15,10 @@ namespace MobeAdmin.Service.Service
     {
         private readonly IProductRepostory _ProductRepostory;
         private readonly IMapper _Mapper;
-        public ProductService(IMapper mapper,IProductRepostory ProductRepostory)
+        public ProductService(IMapper Mapper,IProductRepostory ProductRepostory)
         {
             _ProductRepostory = ProductRepostory;
+            _Mapper = Mapper;
         }
 
         public async Task<List<ProductViewModel>> ListedProductAsync()
@@ -29,7 +30,8 @@ namespace MobeAdmin.Service.Service
 
         public async Task<int> CreateProductAsync(CreateProductViewModel model)
         {
-            return await _ProductRepostory.CreateAsync(_Mapper.Map<Product>(model));
+            var result = _Mapper.Map<Product>(model);
+            return await _ProductRepostory.CreateAsync(result);
         }
 
         public async Task<int> DeleteProductAsync(DeleteProductViewMode model)
