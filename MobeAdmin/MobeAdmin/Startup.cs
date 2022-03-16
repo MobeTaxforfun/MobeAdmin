@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MobeAdmin.Core.Middleware;
 using MobeAdmin.Core.Setup;
 using MobeAdmin.DataAccess;
 using MobeAdmin.DataAccess.DbCore.Base;
@@ -18,6 +19,7 @@ namespace MobeAdmin
 {
     public class Startup
     {
+        private IServiceCollection _services;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -46,19 +48,27 @@ namespace MobeAdmin
             services.AddServiceLayer();
 
             services.AddControllersWithViews();
+
+            _services = services;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseListedService(_services);
+
             if (env.IsDevelopment())
             {
+                //只會在 Development 中生效，顯示 Exception 訊息
                 app.UseDeveloperExceptionPage();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                // Tips: Hsts(HTTP Strict Transport Security Protocol)
+                // 當瀏覽器收到此標頭時，將強制以 HTTPS 在這個網域中進行所有訊息傳遞
+                // HSTS 在應用中需要至少一次的 HTTPS 才能建立 Protocol
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
