@@ -17,9 +17,9 @@ namespace MobeAdmin.Controllers
         /// <param name="message">提示</param>
         /// <returns></returns>
         [NonAction]
-        public BaseMessageAPI<T> Success<T>(T data, string message = "操作成功")
+        public MessageAPI<T> Success<T>(T data, string message = "操作成功")
         {
-            return new BaseMessageAPI<T>()
+            return new MessageAPI<T>()
             {
                 Success = true,
                 Message = message,
@@ -33,9 +33,9 @@ namespace MobeAdmin.Controllers
         /// <param name="message">提示</param>
         /// <returns></returns>
         [NonAction]
-        public BaseMessageAPI Success(string message = "操作成功")
+        public MessageAPI Success(string message = "操作成功")
         {
-            return new BaseMessageAPI()
+            return new MessageAPI()
             {
                 Success = true,
                 Message = message,
@@ -48,9 +48,9 @@ namespace MobeAdmin.Controllers
         /// <param name="message">提示</param>
         /// <returns></returns>
         [NonAction]
-        public BaseMessageAPI<T> Failed<T>(T data, string message = "操作失敗")
+        public MessageAPI<T> Failed<T>(T data, string message = "操作失敗")
         {
-            return new BaseMessageAPI<T>()
+            return new MessageAPI<T>()
             {
                 Success = false,
                 Message = message,
@@ -59,12 +59,23 @@ namespace MobeAdmin.Controllers
         }
 
         [NonAction]
-        public BaseMessageAPI Failed(string message = "操作失敗")
+        public MessageAPI Failed(string message = "操作失敗")
         {
-            return new BaseMessageAPI()
+            return new MessageAPI()
             {
                 Success = false,
                 Message = message,
+            };
+        }
+
+        [NonAction]
+        public MessageValidFailed ValidationFailed(Dictionary<string, string[]> ModelStateErrors, string message = "欄位錯誤")
+        {
+            return new MessageValidFailed()
+            {
+                Success = false,
+                Message = message,
+                ModelStateErrors = ModelStateErrors,
             };
         }
 
