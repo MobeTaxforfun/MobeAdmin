@@ -1,8 +1,14 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using MobeAdmin.Domain.ViewModel.SystemManage.Page
+@model PageSysDepartmentViewModel
 @{
     Layout = "~/Views/Shared/_FrameLayout.cshtml";
+}
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib//jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 }
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -55,36 +61,22 @@
         <div class="card">
             <div class="card-header">
                 <div class="margin float-right">
-                    <button type="button" class="btn btn-info"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
+                    <button type="button" class="btn btn-info btn-sm" onclick="OpenModalCreateDepartment()"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-bordered">
+                <table class="table table-bordered" id="TableDepartment">
                     <thead>
                         <tr>
                             <th style="width:10px">#</th>
                             <th>部門名稱</th>
-                            <th>是否啟用</th>
+                            <th>排序</th>
+                            <td>更新時間</td>
+                            <td>是否啟用</td>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 1; i <= 10; i++)
-                        {
-                            <tr>
-                                <td>@i</td>
-                                <td>測試1</td>
-                                <td>
-                                    <div class="progress progress-xs">
-                                        <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-info btn-sm"><i class="fas fa-plus"></i>&nbsp;&nbsp;編輯</button>
-                                    <button type="button" class="btn btn-info btn-sm"><i class="fas fa-plus"></i>&nbsp;&nbsp;刪除</button>
-                                </td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
             </div>
@@ -102,3 +94,271 @@
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+
+<div class="modal fade" id="ModalCreateDepartment" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">新增精靈</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ModalbodyCreateDepartment">
+
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" onclick="CreateDepartment()">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalUpdateDepartment" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">編輯精靈</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ModalbodyUpdateDepartment">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateDepartment()">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalDeleteDepartment" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">刪除精靈</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>您確定要刪除這個項目?</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary">確定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/template" data-template="TemplateDepartmentTr">
+    <tr>
+        <td>${Index}</td>
+        <td>${departmentName}</td>
+        <td>${sort}</td>
+        <td>${updateTime}</td>
+        <td>
+            ${isEnable}
+        </td>
+        <td>
+            <button type="button" class="btn btn-info btn-sm" data-id="${id}" onclick="OpenModalUpdateDepartment(this)"><i class="fas fa-plus"></i>&nbsp;&nbsp;編輯</button>
+            <button type="button" class="btn btn-info btn-sm" data-id="${id}" onclick="OpenModalDeleteDepartment(this)"><i class="fas fa-plus"></i>&nbsp;&nbsp;刪除</button>
+        </td>
+    </tr>
+</script>
+
+<script type="text/template" data-template="TemplateFormCreateDepartment">
+    <form id="FormCreateDepartment">
+        <div class="form-group">
+            <label for="DepartmentName">部門名稱</label>
+            <input class="form-control" id="CreateSysDepartment_DepartmentName" name="CreateSysDepartment.DepartmentName" placeholder="部門名稱" autocomplete="off">
+            <div id="ErrorCreateSysDepartment_DepartmentName"></div>
+        </div>
+        <div class="form-group">
+            <label for="Sort">部門排序</label>
+            <input type="number" class="form-control" id="CreateSysDepartment_Sort" name="CreateSysDepartment.Sort" value="0" autocomplete="off">
+            <div id="ErrorCreateSysDepartment_Sort"></div>
+        </div>
+        <div class="form-group">
+            <label for="DepartmentDescription">部門描述</label>
+            <input class="form-control" id="CreateSysDepartment_DepartmentDescription" name="CreateSysDepartment.DepartmentDescription" placeholder="部門描述" autocomplete="off">
+            <div id="ErrorCreateSysDepartment_DepartmentDescription"></div>
+        </div>
+    </form>
+</script>
+
+<script type="text/template" data-template="TemplateFormUpdateDepartment">
+    <form id="FormUpdateSysDepartment">
+        <div class="form-group">
+            <label for="DepartmentName">部門名稱</label>
+            <input class="form-control" id="UpdateSysDepartment_DepartmentName" name="UpdateSysDepartment.DepartmentName" placeholder="部門名稱" autocomplete="off">
+            <div id="ErrorUpdateSysDepartment_DepartmentName"></div>
+        </div>
+        <div class="form-group">
+            <label for="Sort">部門排序</label>
+            <input type="number" class="form-control" id="UpdateSysDepartment_Sort" name="UpdateSysDepartment.Sort" value="0" autocomplete="off">
+            <div id="ErrorUpdateSysDepartment_Sort"></div>
+        </div>
+        <div class="form-group">
+            <label for="DepartmentDescription">部門描述</label>
+            <input class="form-control" id="UpdateSysDepartment_DepartmentDescription" name="UpdateSysDepartment.DepartmentDescription" placeholder="部門描述" autocomplete="off">
+            <div id="ErrorUpdateSysDepartment_DepartmentDescription"></div>
+        </div>
+    </form>
+</script>
+
+
+<script>
+     /* 初始化 */
+    $(document).ready(function () {
+        ReloadTable();
+    });
+    /* Template Helper */
+    function render(props) {
+        return function (tok, i) { return (i % 2) ? props[tok] : tok; };
+    }
+    /* Ajax Listed */
+    function ReloadTable() {
+
+        $('#TableDepartment tbody').empty();;
+
+        var Url = GetTableQueryString();
+        $.ajax({
+            type: 'Get',
+            url: Url,
+            dataType: "json",
+            success: function (data) {
+                if (data.success) {
+                    AppendTableRow(data.data);
+                }
+                else {
+
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+
+            }
+        });
+    }
+    /* 載入Table */
+    function AppendTableRow(obj) {
+        var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);
+        $.each(obj, function (index, item) {
+            item["Index"] = index + 1 ;
+            $('#TableDepartment tbody').append(TplTr.map(render(item)).join(''));
+        });
+    }
+    /* 以條件生成 Listed 查詢條件 */
+    function GetTableQueryString() {
+        return '@Url.Action("ListedDepartment", "SysDepartment", new { Area = "SystemManage" })'
+    }
+
+    function OpenModalCreateDepartment() {
+        $("#ModalbodyCreateDepartment").html($('script[data-template="TemplateFormCreateDepartment"]').text().split(/\$\{(.+?)\}/g));
+        $('#ModalCreateDepartment').modal('show');
+    }
+
+    function OpenModalUpdateDepartment(obj) {
+        var OneDepartment = GetOneDepartment($(obj).data('id'));
+        if (OneDepartment == null) {
+            alert("無此資料");
+            return;
+        }
+        console.log(OneDepartment);
+        $("#ModalbodyUpdateDepartment").html($('script[data-template="TemplateFormUpdateDepartment"]').text().split(/\$\{(.+?)\}/g));
+        $("#UpdateSysDepartment_DepartmentName").val(OneDepartment.departmentName);
+        $("#UpdateSysDepartment_Sort").val(OneDepartment.sort);
+        $("#UpdateSysDepartment_DepartmentDescription").val(OneDepartment.departmentDescription);
+        $('#ModalUpdateDepartment').modal('show');
+    }
+
+    function OpenModalDeleteDepartment() {
+        $('#ModalDeleteDepartment').modal('show');
+    }
+
+    function CreateDepartment() {
+
+        var Url = '@Url.Action("CreateDepartment", "SysDepartment", new { Area = "SystemManage" })';
+
+        var Validator = $("#FormCreateDepartment").validate(
+            {
+                errorClass: 'text-danger',
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                    error.appendTo('#Error' + element.attr("name").replace(".", "_"));
+                    console.log("this");
+                    $("#" + element.attr("name").replace(".", "_")).addClass("is-invalid");
+                }
+            });
+
+        var Data = {
+            'CreateSysDepartment.DepartmentName': $("#CreateSysDepartment_DepartmentName").val(),
+            'CreateSysDepartment.DepartmentDescription': $("#CreateSysDepartment_DepartmentDescription").val(),
+            'CreateSysDepartment.Sort': $("#CreateSysDepartment_Sort").val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: Url,
+            data: Data,
+            success: function (data) {
+                if (data.success) {
+                    alert(data.message);
+                    ReloadTable();
+                    $('#ModalCreateDepartment').modal('hide');
+                }
+                else {
+                    if (data.modelStateErrors != null) {
+                        Validator.showErrors(data.modelStateErrors);
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError){
+                alert("伺服器繁忙，請稍後再試");
+            }
+        });
+    }
+
+    function UpdateDepartment() {
+
+    }
+
+    function DeleteDepartment() {
+
+    }
+
+    function GetOneDepartment(id) {
+
+        var RtnData;
+        var Data = {
+            Id: id
+        }
+        var Url = '@Url.Action("GetOneDepartment", "SysDepartment", new { Area = "SystemManage" })';
+        $.ajax({
+            type: 'Post',
+            url: Url,
+            data : Data,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.success) {
+                    RtnData = data.data;
+                }
+                else {
+                    RtnData = null;
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                RtnData = null;
+            }
+        });
+
+        return RtnData;
+    }
+</script>

@@ -22,19 +22,19 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             return View();
         }
 
-        public IActionResult ListedDepartment()
+        public async Task<IActionResult> ListedDepartment()
         {
-            return Json(Success());
+            return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync()));
         }
 
         [HttpPost]
-        public IActionResult CreateDepartment(CreateSysDepartmentViewModel model)
+        public async Task<IActionResult> CreateDepartment([Bind(Prefix = "CreateSysDepartment")] CreateSysDepartmentViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    return Json(Success(@$"新增成功，新增資料 {_SysDepartmentService.CreateSysDepartmentAsync(model)} 筆"));
+                    return Json(Success(@$"新增成功，新增資料 {await _SysDepartmentService.CreateSysDepartmentAsync(model)} 筆"));
                 }
                 else
                 {
@@ -49,6 +49,7 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
                 return Json(Failed("系統錯誤"));
             }
         }
+
         [HttpPost]
         public IActionResult UpdateDepartment(UpdateSysDepartmentViewModel model)
         {
@@ -71,6 +72,7 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
                 return Json(Failed("系統錯誤"));
             }
         }
+
         [HttpPost]
         public IActionResult DeleteDepartment(DeleteSysDepartmentViewModel model)
         {
@@ -94,5 +96,18 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetOneDepartment(int Id)
+        {
+            try
+            {
+                var result = await _SysDepartmentService.GetOneSysDepartmentByIdAsync(Id);
+                return Json(Success(result));
+            }
+            catch (Exception e)
+            {
+                return Json(Failed("系統錯誤"));
+            }
+        }
     }
 }
