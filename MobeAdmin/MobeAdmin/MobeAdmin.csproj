@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyCaching.InMemory" Version="1.5.1" />
+    <PackageReference Include="EasyCaching.Redis" Version="1.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
@@ -17,9 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\DataSearchManage\Controllers\" />
-    <Folder Include="Areas\DataSearchManage\Data\" />
-    <Folder Include="Areas\DataSearchManage\Models\" />
     <Folder Include="Areas\DataSearchManage\Views\" />
   </ItemGroup>
 
