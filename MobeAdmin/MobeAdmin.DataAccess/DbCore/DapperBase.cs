@@ -60,7 +60,7 @@ namespace MobeAdmin.DataAccess.DbCore
         {
             using (var connection = CreateConnection())
             {
-                return (await connection.QuerySingleOrDefaultAsync(sql, parameters));
+                return (await connection.QuerySingleOrDefaultAsync<T>(sql, parameters));
             }
         }
     }

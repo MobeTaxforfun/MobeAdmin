@@ -22,8 +22,10 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ListedDepartment()
+        public async Task<IActionResult> ListedDepartment(int? page)
         {
+            int pager = (page ?? 1) - 1;
+
             return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync()));
         }
 
@@ -51,13 +53,13 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateDepartment(UpdateSysDepartmentViewModel model)
+        public async Task<IActionResult> UpdateDepartment([Bind(Prefix = "UpdateSysDepartment")] UpdateSysDepartmentViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    return Json(Success(@$"更新成功，異動資料 {_SysDepartmentService.UpdateSysDepartmentAsync(model)} 筆"));
+                    return Json(Success(@$"更新成功，異動資料 {await _SysDepartmentService.UpdateSysDepartmentAsync(model)} 筆"));
                 }
                 else
                 {
@@ -74,13 +76,13 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteDepartment(DeleteSysDepartmentViewModel model)
+        public async Task<IActionResult> DeleteDepartment([Bind(Prefix = "DeleteSysDepartment")] DeleteSysDepartmentViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    return Json(Success(@$"刪除成功，刪除資料 {_SysDepartmentService.DeleteSysDepartmentAsync(model)} 筆"));
+                    return Json(Success(@$"刪除成功，刪除資料 {await _SysDepartmentService.DeleteSysDepartmentAsync(model)} 筆"));
                 }
                 else
                 {

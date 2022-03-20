@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MobeAdmin.DataAccess.Interface;
 using MobeAdmin.DataAccess.Interface.AdminDb;
+using MobeAdmin.Domain.Model.AdminDb;
 using MobeAdmin.Domain.ViewModel.SystemManage.Page;
 using MobeAdmin.Service.Interface.SystemManage;
 using System;
@@ -20,24 +21,47 @@ namespace MobeAdmin.Service.Service.SystemManage
             _DepartmentRepository = DepartmentRepository;
             _Mapper = Mapper;
         }
-        public Task<int> CreateSysDepartmentAsync(CreateSysDepartmentViewModel model)
+        public async Task<int> CreateSysDepartmentAsync(CreateSysDepartmentViewModel model)
         {
-            throw new NotImplementedException();
+            var department = _Mapper.Map<Department>(model);
+
+            department.UpdateTime = DateTime.Now;
+            department.CreateTime = DateTime.Now;
+            department.IsEnable = true;
+            department.IsDelete = false;
+
+            return await _DepartmentRepository.CreateAsync(department);
         }
 
-        public Task<int> DeleteSysDepartmentAsync(DeleteSysDepartmentViewModel model)
+        public async Task<int> DeleteSysDepartmentAsync(DeleteSysDepartmentViewModel model)
         {
-            throw new NotImplementedException();
+            return await _DepartmentRepository.DeleteAsync(_Mapper.Map<Department>(model));
         }
 
-        public Task<List<ListedSysDepartmentViewModel>> ListedSysDepartmentAsync()
+        public async Task<int> UpdateSysDepartmentAsync(UpdateSysDepartmentViewModel model)
         {
-            throw new NotImplementedException();
+            var department = _Mapper.Map<Department>(model);
+
+            department.UpdateTime = DateTime.Now;
+
+            return await _DepartmentRepository.UpdateAsync(department);
         }
 
-        public Task<int> UpdateSysDepartmentAsync(UpdateSysDepartmentViewModel model)
+        public async Task<List<SysDepartmentViewModel>> ListedSysDepartmentAsync()
         {
-            throw new NotImplementedException();
+            return _Mapper.Map<List<SysDepartmentViewModel>>((await _DepartmentRepository.ListedAllAsync()).ToList());
+        }
+
+        public async Task<SysDepartmentViewModel> GetOneSysDepartmentByIdAsync(int Id)
+        {
+            return _Mapper.Map<SysDepartmentViewModel>(await _DepartmentRepository.GetOne(Id));
+        }
+
+        public async Task<PaginateSysDepartmentViewModel> ListedSysDepartmentAsync(int page, int itemsPerPage)
+        {
+            PaginateSysDepartmentViewModel model = new();
+
+            return model;
         }
     }
 }

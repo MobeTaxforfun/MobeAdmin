@@ -9,7 +9,9 @@
 @section Scripts{
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib//jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
 }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.5/pagination.min.js"></script>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -81,7 +83,7 @@
                 </table>
             </div>
             <div class="card-footer clearfix">
-                <ul class="pagination m-0 justify-content-center">
+                <ul id="pagination" class="pagination m-0 justify-content-center">
                     <li class="page-item"><a class="page-link" href="#">«</a></li>
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
                     <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -145,10 +147,14 @@
             </div>
             <div class="modal-body">
                 <p>您確定要刪除這個項目?</p>
+                <form id="FormDeleteDepartment">
+                    <input class="form-control" type="hidden" id="DeleteSysDepartment_Id" name="DeleteSysDepartment.Id">
+                    <div id="ErrorDeleteSysDepartment_Id"></div>
+                </form>
             </div>
             <div class="modal-footer justify-content-between">
                 <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
-                <button type="button" class="btn btn-primary">確定</button>
+                <button type="button" class="btn btn-primary" onclick="DeleteDepartment()">確定</button>
             </div>
         </div>
     </div>
@@ -192,6 +198,8 @@
 
 <script type="text/template" data-template="TemplateFormUpdateDepartment">
     <form id="FormUpdateSysDepartment">
+        <input class="form-control" type="hidden" id="UpdateSysDepartment_Id" name="UpdateSysDepartment.Id">
+        <div id="ErrorUpdateSysDepartment_Id"></div>
         <div class="form-group">
             <label for="DepartmentName">部門名稱</label>
             <input class="form-control" id="UpdateSysDepartment_DepartmentName" name="UpdateSysDepartment.DepartmentName" placeholder="部門名稱" autocomplete="off">
@@ -210,10 +218,10 @@
     </form>
 </script>
 
-
 <script>
      /* 初始化 */
     $(document).ready(function () {
+        ReloadPagination(100,10);
         ReloadTable();
     });
     /* Template Helper */
@@ -232,6 +240,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.success) {
+
                     AppendTableRow(data.data);
                 }
                 else {
@@ -243,6 +252,16 @@
             }
         });
     }
+
+    function ReloadPagination( CurrentIndex ,total, itemsPerPage) {
+        var totalpage = 0;
+        totalpage = (total / itemsPerPage) + 1;
+        $('#pagination').html('')
+        for (var i = 1; i <= totalpage; i++) {
+            $("#pagination").append('<li class="page-item"><a class="page-link" href="#">'+ i +'</a></li> ');
+        }
+    }
+
     /* 載入Table */
     function AppendTableRow(obj) {
         var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);
@@ -267,15 +286,23 @@
             alert("無此資料");
             return;
         }
-        console.log(OneDepartment);
+
         $("#ModalbodyUpdateDepartment").html($('script[data-template="TemplateFormUpdateDepartment"]').text().split(/\$\{(.+?)\}/g));
+        $("#UpdateSysDepartment_Id").val(OneDepartment.id);
         $("#UpdateSysDepartment_DepartmentName").val(OneDepartment.departmentName);
         $("#UpdateSysDepartment_Sort").val(OneDepartment.sort);
         $("#UpdateSysDepartment_DepartmentDescription").val(OneDepartment.departmentDescription);
+
         $('#ModalUpdateDepartment').modal('show');
     }
 
-    function OpenModalDeleteDepartment() {
+    function OpenModalDeleteDepartment(obj) {
+        var DepartmentId = $(obj).data('id');
+        if (DepartmentId == null) {
+            alert("無此資料");
+            return;
+        }
+        $("#DeleteSysDepartment_Id").val(DepartmentId);
         $('#ModalDeleteDepartment').modal('show');
     }
 
@@ -327,9 +354,94 @@
 
     function UpdateDepartment() {
 
+        var Url = '@Url.Action("UpdateDepartment", "SysDepartment", new { Area = "SystemManage" })';
+
+        var Validator = $("#FormUpdateSysDepartment").validate(
+            {
+                errorClass: 'text-danger',
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                    error.appendTo('#Error' + element.attr("name").replace(".", "_"));
+                    console.log("this");
+                    $("#" + element.attr("name").replace(".", "_")).addClass("is-invalid");
+                }
+            });
+
+        var Data = {
+            'UpdateSysDepartment.Id': $("#UpdateSysDepartment_Id").val(),
+            'UpdateSysDepartment.DepartmentName': $("#UpdateSysDepartment_DepartmentName").val(),
+            'UpdateSysDepartment.DepartmentDescription': $("#UpdateSysDepartment_DepartmentDescription").val(),
+            'UpdateSysDepartment.Sort': $("#UpdateSysDepartment_Sort").val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: Url,
+            data: Data,
+            success: function (data) {
+                if (data.success) {
+                    alert(data.message);
+                    ReloadTable();
+                    $('#ModalUpdateDepartment').modal('hide');
+                }
+                else {
+                    if (data.modelStateErrors != null) {
+                        Validator.showErrors(data.modelStateErrors);
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("伺服器繁忙，請稍後再試");
+            }
+        });
+
     }
 
     function DeleteDepartment() {
+
+        var Url = '@Url.Action("DeleteDepartment", "SysDepartment", new { Area = "SystemManage" })';
+
+        var Validator = $("#FormDeleteDepartment").validate(
+            {
+                errorClass: 'text-danger',
+                errorElement: "span",
+                errorPlacement: function (error, element) {
+                    error.appendTo('#Error' + element.attr("name").replace(".", "_"));
+                    console.log("this");
+                    $("#" + element.attr("name").replace(".", "_")).addClass("is-invalid");
+                }
+            });
+
+        var Data = {
+            'DeleteSysDepartment.Id': $("#DeleteSysDepartment_Id").val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: Url,
+            data: Data,
+            success: function (data) {
+                if (data.success) {
+                    alert(data.message);
+                    ReloadTable();
+                    $('#ModalDeleteDepartment').modal('hide');
+                }
+                else {
+                    if (data.modelStateErrors != null) {
+                        Validator.showErrors(data.modelStateErrors);
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("伺服器繁忙，請稍後再試");
+            }
+        });
 
     }
 
