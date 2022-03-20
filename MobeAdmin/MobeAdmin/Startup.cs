@@ -1,3 +1,4 @@
+using EasyCaching.Core.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -30,6 +31,17 @@ namespace MobeAdmin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            //int Cache
+            services.AddEasyCaching(options =>
+            {
+                options.UseRedis(config =>
+                {
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                    config.DBConfig.KeyPrefix = "test";
+                });
+            });
+
             var ConnectionDict = new Dictionary<EnumConnectionName, string>
             {
                 { EnumConnectionName.Master, this.Configuration.GetConnectionString("Master") },

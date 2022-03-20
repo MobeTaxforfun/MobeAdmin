@@ -16,4 +16,11 @@
     <ProjectReference Include="..\MobeAdmin.Utility\MobeAdmin.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\DataSearchManage\Controllers\" />
+    <Folder Include="Areas\DataSearchManage\Data\" />
+    <Folder Include="Areas\DataSearchManage\Models\" />
+    <Folder Include="Areas\DataSearchManage\Views\" />
+  </ItemGroup>
+
 </Project>
