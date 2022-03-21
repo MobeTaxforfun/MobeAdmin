@@ -25,8 +25,7 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
         public async Task<IActionResult> ListedDepartment(int? page)
         {
             int pager = (page ?? 1) - 1;
-
-            return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync()));
+            return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync(pager,10)));
         }
 
         [HttpPost]
