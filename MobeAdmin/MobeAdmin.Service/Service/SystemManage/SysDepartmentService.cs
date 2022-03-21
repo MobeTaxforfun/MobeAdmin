@@ -61,6 +61,10 @@ namespace MobeAdmin.Service.Service.SystemManage
         {
             PaginateSysDepartmentViewModel model = new();
 
+            var result = await _DepartmentRepository.PaginateAsync(page, itemsPerPage,"");
+            model.Max = result.Item1;
+            model.PageData = _Mapper.Map<List<SysDepartmentViewModel>>(result.Item2);
+
             return model;
         }
     }
