@@ -9,7 +9,9 @@
 @section Scripts{
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib//jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-
+    <script src="~/lib/jquery-tmpl/jquery.tmpl.min.js"></script>
+    <script src="~/lib/moment/moment.js"></script>
+}
 }
 
 <div class="content-wrapper">
@@ -38,17 +40,21 @@
                     <div class="col-sm-3"></div>
                     <div class="col-sm-3">
                         <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-3 col-form-label">部門名稱:</label>
+                            <label for="DepartmemtName" class="col-sm-3 col-form-label">部門名稱:</label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" id="inputEmail3" placeholder="">
+                                <input class="form-control" id="DepartmemtName">
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-3">
                         <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-3 col-form-label">是否啟用:</label>
+                            <label for="IsEnbale" class="col-sm-3 col-form-label">是否啟用:</label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" id="inputEmail3" placeholder="">
+                                <select class="form-control" id="IsEnbale">
+                                    <option value="0">請選擇</option>
+                                    <option value="1">是</option>
+                                    <option value="2">否</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -56,12 +62,14 @@
                 </div>
             </div>
             <div class="card-footer" style="text-align:center">
-                <button type="submit" class="btn btn-info">搜尋</button>
-                <button type="submit" class="btn btn-info">重製</button>
+                <button type="submit" class="btn btn-info" onclick="SearchData()">搜尋</button>
+                <button type="submit" class="btn btn-info" onclick="ResetData()">重製</button>
             </div>
         </div>
         <div class="card">
             <div class="card-header">
+                <div class="margin float-left" id="PageCount">
+                </div>
                 <div class="margin float-right">
                     <button type="button" class="btn btn-info btn-sm" onclick="OpenModalCreateDepartment()"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
                 </div>
@@ -83,7 +91,7 @@
                 </table>
             </div>
             <div class="card-footer clearfix">
-                <ul id="pagination" class="pagination m-0 justify-content-center">
+                <ul class="pagination m-0 justify-content-center" id="UlPagination">
                     <li class="page-item"><a class="page-link" href="#">«</a></li>
                     <li class="page-item"><a class="page-link" href="#">1</a></li>
                     <li class="page-item"><a class="page-link" href="#">2</a></li>
@@ -91,6 +99,7 @@
                     <li class="page-item"><a class="page-link" href="#">»</a></li>
                 </ul>
             </div>
+            <div id="testpage"></div>
         </div>
     </section>
     <!-- /.content -->
@@ -160,20 +169,32 @@
     </div>
 </div>
 
-<script type="text/template" data-template="TemplateDepartmentTr">
+<script type="text/template" data-template="TemplateDepartmentTr" id="TemplateDepartmentTr">
     <tr>
         <td>${Index}</td>
         <td>${departmentName}</td>
         <td>${sort}</td>
         <td>${updateTime}</td>
         <td>
-            ${isEnable}
+            <select class="form-control" data-id="${id}" onchange="SetDepartmentEnable(this)">
+                {{if $isEnable }}
+                <option selected>是</option>
+                <option>否</option>
+                {{else}}
+                <option>是</option>
+                <option>否</option>
+                {{/if}}
+            </select>
         </td>
         <td>
             <button type="button" class="btn btn-info btn-sm" data-id="${id}" onclick="OpenModalUpdateDepartment(this)"><i class="fas fa-plus"></i>&nbsp;&nbsp;編輯</button>
             <button type="button" class="btn btn-info btn-sm" data-id="${id}" onclick="OpenModalDeleteDepartment(this)"><i class="fas fa-plus"></i>&nbsp;&nbsp;刪除</button>
         </td>
     </tr>
+</script>
+
+<script type="text/template" data-template="TemplatePageitem">
+    <li class="page-item ${Active}"><a class="page-link" href="${HrefName}" onclick="PagelinkOnclick(this)">${PageName}</a></li>
 </script>
 
 <script type="text/template" data-template="TemplateFormCreateDepartment">
@@ -218,18 +239,29 @@
     </form>
 </script>
 
-<script>
+<script type="text/javascript">
      /* 初始化 */
     $(document).ready(function () {
-        ReloadPagination(100,10);
         ReloadTable();
     });
     /* Template Helper */
     function render(props) {
         return function (tok, i) { return (i % 2) ? props[tok] : tok; };
     }
+    /* 搜尋方法 */
+    function SearchData() {
+        var Data = {
+            Enable: $("#IsEnbale option").filter(':selected').val(),
+            Name : $("#DepartmemtName").val()
+        };
+        ReloadTable(Data);
+    }
+    /* 重製此頁 */
+    function ResetData() {
+        history.go(0);
+    }
     /* Ajax Listed */
-    function ReloadTable() {
+    function ReloadTable(Data) {
 
         $('#TableDepartment tbody').empty();;
 
@@ -237,14 +269,15 @@
         $.ajax({
             type: 'Get',
             url: Url,
+            data: Data,
             dataType: "json",
             success: function (data) {
                 if (data.success) {
-
-                    AppendTableRow(data.data);
+                    AppendTableRow(data.data.pageData);
+                    LoadPaginate(data.data.max, 10);
                 }
                 else {
-
+                    alert(data.message);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -252,98 +285,106 @@
             }
         });
     }
-
-    function ReloadPagination( CurrentIndex ,total, itemsPerPage) {
-        var totalpage = 0;
-        totalpage = (total / itemsPerPage) + 1;
-        $('#pagination').html('')
-        for (var i = 1; i <= totalpage; i++) {
-            $("#pagination").append('<li class="page-item"><a class="page-link" href="#">'+ i +'</a></li> ');
-        }
+    /* 載入Table */
+    function AppendTableRow(obj) {
+        var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);
+        $.each(obj, function (index, item) {
+            item["Index"] = index + 1;
+            item["updateTime"] = moment(item["updateTime"]).format('YYYY-MM-DD HH:mm:ss');
+            /*$('#TableDepartment tbody').append(TplTr.map(render(item)).join(''));*/
+            $("#TemplateDepartmentTr").tmpl(item).appendTo("#TableDepartment tbody");
+        });
     }
-
-    //Paginate
-    function LoadPaginate(TotalCount) {
-        $(".pageCount").html("共 " + TotalCount + " 筆。");
-        maxpage = (TotalCount / 15);
+    /* 以條件生成 Listed 查詢條件 */
+    function GetTableQueryString() {
+        return '@Url.Action("ListedDepartment", "SysDepartment", new { Area = "SystemManage" })'
+    }
+    /* 現在頁數 */
+    var currentpage = 1;
+    /* 總頁簽方法*/
+    function LoadPaginate(TotalCount,ItemPerPage) {
+        $("#PageCount").html("共 " + TotalCount + " 筆");
+        maxpage = (TotalCount / ItemPerPage);
         //處理頁籤
-        var tags = '<a href="#first">首頁</a>';
-        tags += '<a href="#prev"><<</a>';
+        var tags = LoadPageItem('#first', '<<');
+        tags += LoadPageItem('#prev', '<');
         if (parseInt(currentpage, 10) <= 5) {
             for (var i = 0; i < Math.min(9, maxpage); i++) {
                 if (i == parseInt(currentpage, 10) - 1) {
-                    tags += '<a href="#' + (i + 1) + '"  class="current" style="background:#62ecd0;border:1px solid #a1e3e8;">' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1, 'active');
                 } else {
-                    tags += '<a href="#' + (i + 1) + '" >' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1);
                 }
 
             }
         } else if (parseInt(currentpage, 10) >= maxpage - 4) {
             for (var i = Math.max(Math.ceil(maxpage) - 9, 0); i < maxpage; i++) {
                 if (i == parseInt(currentpage, 10) - 1) {
-                    tags += '<a href="#' + (i + 1) + '"  class="current">' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1, 'active');
                 } else {
-                    tags += '<a href="#' + (i + 1) + '" >' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1);
                 }
             }
         } else {
             for (var i = parseInt(currentpage, 10) - 5; i < parseInt(currentpage, 10) + 4; i++) {
                 if (i == parseInt(currentpage, 10) - 1) {
-                    tags += '<a href="#' + (i + 1) + '"  class="current">' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1, 'active');
                 } else {
-                    tags += '<a href="#' + (i + 1) + '" >' + (i + 1) + '</a>';
+                    tags += LoadPageItem('#' + (i + 1), i + 1);
                 }
             }
         }
-        tags += '<a href="#next">>></a>';
-        tags += '<a href="#last">末頁</a>';
-        var pages = "div#pages";
-        $(pages).html(tags);
-        //重新加入/超連結函數
-        $(pages + " a").click(function () {
-            var $this = $(this);
-            var gopage = currentpage;
-            if ($this.attr('href') == "#first") {
+        tags += LoadPageItem('#next', '>');
+        tags += LoadPageItem('#last', '>>');
+        $('#UlPagination').html(tags);
+    }
+
+    /* 頁數載入方法
+     * @@param href 頁數指標參數
+     * @@param pagename 要顯示的頁碼
+     * @@param active 是否標記
+     */
+    function LoadPageItem(href, pagename, active) {
+        var TplPageitem = $('script[data-template="TemplatePageitem"]').text().split(/\$\{(.+?)\}/g);
+        return TplPageitem.map(render({
+            "HrefName": href,
+            "PageName": pagename,
+            "Active": active
+            })).join('')
+    }
+
+    /* 換頁方法 */
+    function PagelinkOnclick(obj) {
+        console.log(obj);
+        var $this = $(obj);
+        var gopage = currentpage;
+
+        if ($this.attr('href') == "#first") {
+            gopage = 1;
+        } else if ($this.attr('href') == "#prev") {
+            if (currentpage - 1 == 0) {
                 gopage = 1;
-            } else if ($this.attr('href') == "#prev") {
-                if (currentpage - 1 == 0) {
-                    gopage = 1;
-                } else {
-                    gopage = currentpage - 1;
-                }
-            } else if ($this.attr('href') == "#next") {
-                if (currentpage + 1 > Math.ceil(maxpage)) {
-                    gopage = Math.ceil(maxpage);
-                } else {
-                    gopage = currentpage + 1;
-                }
-            } else if ($this.attr('href') == "#last") {
+            } else {
+                gopage = currentpage - 1;
+            }
+        } else if ($this.attr('href') == "#next") {
+            if (currentpage + 1 > Math.ceil(maxpage)) {
                 gopage = Math.ceil(maxpage);
             } else {
-                gopage = parseInt($this.attr('href').substring(1, 5), 10);
+                gopage = currentpage + 1;
             }
-            if (gopage == currentpage) { return false; }
-            currentpage = gopage;
-            SearchData();
-            return false;
-        });
+        } else if ($this.attr('href') == "#last") {
+            gopage = Math.ceil(maxpage);
+        } else {
+            gopage = parseInt($this.attr('href').substring(1, 5), 10);
+        }
+        if (gopage == currentpage) { return false; }
+        currentpage = gopage;
+        ReloadTable();
+        return false;
     }
 
-
-    /* 載入Table */
-    function AppendTableRow(obj) {
-        var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);
-        $.each(obj, function (index, item) {
-            item["Index"] = index + 1 ;
-            $('#TableDepartment tbody').append(TplTr.map(render(item)).join(''));
-        });
-    }
-
-    /* 以條件生成 Listed 查詢條件 */
-    function GetTableQueryString() {
-        return '@Url.Action("ListedDepartment", "SysDepartment", new { Area = "SystemManage" })'
-    }
-
+    /* CRUD */
     function OpenModalCreateDepartment() {
         $("#ModalbodyCreateDepartment").html($('script[data-template="TemplateFormCreateDepartment"]').text().split(/\$\{(.+?)\}/g));
         $('#ModalCreateDepartment').modal('show');
@@ -541,5 +582,10 @@
         });
 
         return RtnData;
+    }
+
+    /* 快速幫手是否啟用 */
+    function SetDepartmentEnable(obj) {
+        var DepartmentId = $(obj).data('id');
     }
 </script>

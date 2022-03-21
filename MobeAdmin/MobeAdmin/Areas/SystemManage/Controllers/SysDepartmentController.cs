@@ -4,6 +4,7 @@ using MobeAdmin.Domain.ViewModel.SystemManage.Page;
 using MobeAdmin.Service.Interface.SystemManage;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,10 +23,17 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ListedDepartment(int? page)
+        public async Task<IActionResult> ListedDepartment(int? page, [DefaultValue(0)] int Enable, string Name)
         {
-            int pager = (page ?? 1) - 1;
-            return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync(pager,10)));
+            try
+            {
+                int pager = (page ?? 1) - 1;
+                return Json(Success(await _SysDepartmentService.ListedSysDepartmentAsync(pager, 10, Enable, Name)));
+            }
+            catch (Exception e)
+            {
+                return Json(Failed("系統錯誤"));
+            }
         }
 
         [HttpPost]
