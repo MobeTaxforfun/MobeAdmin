@@ -16,10 +16,10 @@ namespace MobeAdmin.Core.Services
             if (services == null) throw new ArgumentNullException(nameof(services));
             // 載入 AddAutoMapper 與相關設定
             // 指定載入 MobeAdmin.Domain 整顆 Assemblies, AddAutoMapper 會反射找出所有 Profile
-            //var test1 = AppDomain.CurrentDomain.GetAssemblies();
-            //var test2 = AppDomain.CurrentDomain.Load("MobeAdmin.Domain");
-            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddAutoMapper(AppDomain.CurrentDomain.Load("MobeAdmin.Domain"));
+            //不使用 GetAssemblies() 詳細請看微軟文件
+            //GetAssemblies() -> if the references haven't been needed by the CLR they will not appear in the list of assemblies in the current AppDomain
+            //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }
 }
