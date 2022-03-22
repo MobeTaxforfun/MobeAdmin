@@ -12,7 +12,7 @@
     <script src="~/lib/jquery-tmpl/jquery.tmpl.min.js"></script>
     <script src="~/lib/moment/moment.js"></script>
 }
-}
+
 
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -22,12 +22,12 @@
                 <div class="col-sm-6">
                     <h1>部門管理</h1>
                 </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Blank Page</li>
-                    </ol>
-                </div>
+                @*<div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item active">Blank Page</li>
+                        </ol>
+                    </div>*@
             </div>
         </div><!-- /.container-fluid -->
     </section>
@@ -177,12 +177,12 @@
         <td>${updateTime}</td>
         <td>
             <select class="form-control" data-id="${id}" onchange="SetDepartmentEnable(this)">
-                {{if $isEnable }}
-                <option selected>是</option>
-                <option>否</option>
+                {{if isEnable == true}}
+                <option selected value="1">是</option>
+                <option value="2">否</option>
                 {{else}}
-                <option>是</option>
-                <option>否</option>
+                <option value="1">是</option>
+                <option selected value="2">否</option>
                 {{/if}}
             </select>
         </td>
@@ -250,26 +250,28 @@
     }
     /* 搜尋方法 */
     function SearchData() {
-        var Data = {
+        SearchQuery = {
             Enable: $("#IsEnbale option").filter(':selected').val(),
             Name : $("#DepartmemtName").val()
         };
-        ReloadTable(Data);
+        ReloadTable();
     }
     /* 重製此頁 */
     function ResetData() {
         history.go(0);
     }
+
+    var SearchQuery = {};
     /* Ajax Listed */
-    function ReloadTable(Data) {
+    function ReloadTable() {
 
         $('#TableDepartment tbody').empty();;
 
-        var Url = GetTableQueryString();
+        var Url = GetTableQueryString() + '?page=' + currentpage;
         $.ajax({
             type: 'Get',
             url: Url,
-            data: Data,
+            data: SearchQuery,
             dataType: "json",
             success: function (data) {
                 if (data.success) {
@@ -287,7 +289,7 @@
     }
     /* 載入Table */
     function AppendTableRow(obj) {
-        var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);
+        /*var TplTr = $('script[data-template="TemplateDepartmentTr"]').text().split(/\$\{(.+?)\}/g);*/
         $.each(obj, function (index, item) {
             item["Index"] = index + 1;
             item["updateTime"] = moment(item["updateTime"]).format('YYYY-MM-DD HH:mm:ss');
@@ -587,5 +589,29 @@
     /* 快速幫手是否啟用 */
     function SetDepartmentEnable(obj) {
         var DepartmentId = $(obj).data('id');
+        var Data = {
+            Id: DepartmentId,
+            Enable: $(obj).val()
+        };
+        var Url = '@Url.Action("SetIsEnable", "SysDepartment", new { Area = "SystemManage" })';
+
+        $.ajax({
+            type: 'Post',
+            url: Url,
+            data: Data,
+            dataType: "json",
+            success: function (data) {
+                if (data.success) {
+                    alert(data.message);
+                    ReloadTable();
+                }
+                else {
+                   alert(data.message);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("伺服器繁忙，請稍後再試");
+            }
+        });
     }
 </script>

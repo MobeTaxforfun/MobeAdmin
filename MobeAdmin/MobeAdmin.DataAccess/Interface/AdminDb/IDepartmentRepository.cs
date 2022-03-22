@@ -9,6 +9,7 @@ namespace MobeAdmin.DataAccess.Interface.AdminDb
 {
     public interface IDepartmentRepository : IGenericRepository<Department>
     {
-        public Task<Tuple<int, IEnumerable<Department>>> PaginateAsync(int page, int itemsPerPage, string name);
+        public Task<Tuple<int, IEnumerable<Department>>> PaginateAsync(int page, int itemsPerPage, int IsEnable, string DepartmentName);
+        public Task<int> SetDepartmentEnableById(int Id, int Enable);
     }
 }

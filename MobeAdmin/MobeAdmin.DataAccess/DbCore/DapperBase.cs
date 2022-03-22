@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,8 @@ namespace MobeAdmin.DataAccess.DbCore
         public IDbConnection _DbConnection { get; set; }
         private IDbConnection CreateConnection()
         {
-            return _DbConnection;
+            var connection = new SqlConnection(_DbConnection.ConnectionString);
+            return connection;
         }
 
         protected int Execute(string sql, object parameters = null)

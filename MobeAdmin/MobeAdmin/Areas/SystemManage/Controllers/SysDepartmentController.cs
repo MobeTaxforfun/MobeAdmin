@@ -18,6 +18,7 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
         {
             _SysDepartmentService = SysDepartmentService;
         }
+
         public IActionResult Index()
         {
             return View();
@@ -112,6 +113,19 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             {
                 var result = await _SysDepartmentService.GetOneSysDepartmentByIdAsync(Id);
                 return Json(Success(result));
+            }
+            catch (Exception e)
+            {
+                return Json(Failed("系統錯誤"));
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetIsEnable(int Id, int Enable)
+        {
+            try
+            {
+                return Json(Success(@$"更新成功，異動資料 {await _SysDepartmentService.SetSysDepartmentEnableById(Id, Enable)} 筆"));
             }
             catch (Exception e)
             {

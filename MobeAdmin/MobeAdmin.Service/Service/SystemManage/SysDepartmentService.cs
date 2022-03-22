@@ -57,15 +57,20 @@ namespace MobeAdmin.Service.Service.SystemManage
             return _Mapper.Map<SysDepartmentViewModel>(await _DepartmentRepository.GetOne(Id));
         }
 
-        public async Task<PaginateSysDepartmentViewModel> ListedSysDepartmentAsync(int page, int itemsPerPage)
+        public async Task<PaginateSysDepartmentViewModel> ListedSysDepartmentAsync(int page, int itemsPerPage, int IsEnable, string DepartmentName)
         {
             PaginateSysDepartmentViewModel model = new();
 
-            var result = await _DepartmentRepository.PaginateAsync(page, itemsPerPage,"");
+            var result = await _DepartmentRepository.PaginateAsync(page, itemsPerPage, IsEnable, DepartmentName);
             model.Max = result.Item1;
             model.PageData = _Mapper.Map<List<SysDepartmentViewModel>>(result.Item2);
 
             return model;
+        }
+
+        public async Task<int> SetSysDepartmentEnableById(int Id, int Enable)
+        {
+            return await _DepartmentRepository.SetDepartmentEnableById(Id, Enable);
         }
     }
 }
