@@ -11,7 +11,8 @@ namespace MobeAdmin.DataAccess
         Task<IEnumerable<T>> ListedAllAsync();
         Task<int> CreateAsync(T model);
         Task<int> UpdateAsync(T model);
-        Task<int> DeleteAsync(object model);
-        Task<T> GetOne(object Id);
+        Task<int> DeleteAsync(T model);
+        Task<T> GetOne(int Id);
+        Task<Tuple<int, IEnumerable<T>>> PaginateAsync(int page, int itemsPerPage);
     }
 }

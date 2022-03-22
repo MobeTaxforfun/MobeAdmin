@@ -37,7 +37,7 @@ namespace MobeAdmin.Core.Middleware
                     await ms.CopyToAsync(originalBody);
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
                                 
             }
