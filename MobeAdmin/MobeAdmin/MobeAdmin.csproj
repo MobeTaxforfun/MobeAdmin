@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MobeAdmin.Core\MobeAdmin.Core.csproj" />
+    <ProjectReference Include="..\MobeAdmin.Helper\MobeAdmin.Helper.csproj" />
     <ProjectReference Include="..\MobeAdmin.Service\MobeAdmin.Service.csproj" />
     <ProjectReference Include="..\MobeAdmin.Utility\MobeAdmin.Utility.csproj" />
   </ItemGroup>

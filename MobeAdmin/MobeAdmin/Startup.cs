@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MobeAdmin.Core.Middleware;
-using MobeAdmin.Core.Setup;
+using MobeAdmin.Core.Services;
 using MobeAdmin.DataAccess;
 using MobeAdmin.DataAccess.DbCore.Base;
 using MobeAdmin.Service;
@@ -41,7 +41,7 @@ namespace MobeAdmin
             services.AddTransient<IDbConnectionFactory, DbConnectionFactory>();
 
             //Init AutoMappper 
-            services.AddAutoMapperInit();
+            services.AddAutoMapperEntity();
             //Init DataAccessLayer 中需要的的 Interface
             services.AddDataAccessLayer();
             //Init ServiceLayer 中所有的 Interface
