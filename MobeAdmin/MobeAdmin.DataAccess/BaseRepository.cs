@@ -28,18 +28,18 @@ namespace MobeAdmin.DataAccess
             this.TableName = TableName;
         }
 
-        public virtual async Task<int> DeleteAsync(object Id)
+        public virtual async Task<int> DeleteAsync(T Id)
         {
             string Condition = GenerateListOfPropertiesGetCondition(GetProperties);
             string mainsql = @$"Delete From {TableName} Where {Condition} = @Id";
             return await ExecuteAsync(mainsql, Id);
         }
 
-        public virtual async Task<T> GetOne(object Id)
+        public virtual async Task<T> GetOne(int Id)
         {
             string Condition = GenerateListOfPropertiesGetCondition(GetProperties);
             string mainsql = @$"Select Top(1) * From {TableName} Where {Condition} = @Id";
-            return await QuerySingleOrDefaultAsync<T>(mainsql, Id);
+            return await QuerySingleOrDefaultAsync<T>(mainsql, new { Id });
         }
 
         public virtual async Task<IEnumerable<T>> ListedAllAsync()
@@ -59,6 +59,13 @@ namespace MobeAdmin.DataAccess
             string mainsql = GenerateUpdateSql();
             return await ExecuteAsync(mainsql, model);
         }
+
+        public virtual async Task<Tuple<int, IEnumerable<T>>> PaginateAsync(int page, int itemsPerPage)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region 延伸方法
 
         /// <summary>
         /// 將 T 自動轉換成 SQL Insert 語法
@@ -145,20 +152,18 @@ namespace MobeAdmin.DataAccess
         /// <returns></returns>
         private string GenerateListOfPropertiesGetCondition(IEnumerable<PropertyInfo> ListOfProperties)
         {
-            var result = (from propertyInfo in ListOfProperties
-                          let attributes = propertyInfo.GetCustomAttributes(typeof(KeyAttribute), false)
-                          select propertyInfo.Name);
-            if(result == null)
+            foreach (PropertyInfo property in ListOfProperties)
             {
-                throw new Exception("快速方法需要一個 Key 值");
+                var attribute = Attribute.GetCustomAttribute(property, typeof(KeyAttribute)) as KeyAttribute;
+                if (attribute != null)
+                {
+                    return property.Name;
+                }
             }
 
-            if (result.Count() > 1)
-            {
-                throw new Exception("快速方法不支援多組 Key");
-            }
-
-            return result.FirstOrDefault();
+            throw new Exception("快速方法需要一個 Key 值");
         }
+
+        #endregion
     }
 }

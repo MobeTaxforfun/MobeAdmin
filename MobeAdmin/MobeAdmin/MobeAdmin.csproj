@@ -16,4 +16,8 @@
     <ProjectReference Include="..\MobeAdmin.Utility\MobeAdmin.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\moment\" />
+  </ItemGroup>
+
 </Project>
