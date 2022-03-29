@@ -73,6 +73,8 @@ namespace MobeAdmin
                 app.UseHsts();
             }
 
+            app.UseMiddleware<ReqRespLogMiddleware>();
+
             app.UseListedService(_services);
 
             app.UseHttpsRedirection();
