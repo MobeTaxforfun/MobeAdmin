@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MobeAdmin.Controllers;
+using MobeAdmin.Core.Filter;
 using MobeAdmin.Domain.ViewModel.SystemManage.Page;
 using MobeAdmin.Service.Interface.SystemManage;
 using System;
@@ -19,6 +20,7 @@ namespace MobeAdmin.Areas.SystemManage.Controllers
             _SysDepartmentService = SysDepartmentService;
         }
 
+        [Logged("部門管理","瀏覽")]
         public IActionResult Index()
         {
             return View();

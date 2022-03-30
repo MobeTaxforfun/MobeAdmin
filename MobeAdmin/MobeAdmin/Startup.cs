@@ -73,14 +73,14 @@ namespace MobeAdmin
                 app.UseHsts();
             }
 
-            app.UseMiddleware<ReqRespLogMiddleware>();
-
             app.UseListedService(_services);
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseMiddleware<ReqRespLogMiddleware>();
 
             app.UseAuthorization();
 
